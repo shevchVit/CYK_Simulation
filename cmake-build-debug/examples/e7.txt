@@ -1,2 +1,0 @@
-S->NP VP;VP->VP with NP|V NP|eats;NP->a N|she;V->eats;N->fish|fork;
-she eats a fish with a fork
