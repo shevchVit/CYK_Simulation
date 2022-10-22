@@ -1,2 +1,0 @@
-S->b A|a B;A->a|a S|b A A;B->b|b S|a B B;
-b a a b a

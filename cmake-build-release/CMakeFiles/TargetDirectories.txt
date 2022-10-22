@@ -1,3 +1,0 @@
-/Users/vitaliy/CLionProjects/HSE/for_lang/CYK_simulation/cmake-build-release/CMakeFiles/rebuild_cache.dir
-/Users/vitaliy/CLionProjects/HSE/for_lang/CYK_simulation/cmake-build-release/CMakeFiles/edit_cache.dir
-/Users/vitaliy/CLionProjects/HSE/for_lang/CYK_simulation/cmake-build-release/CMakeFiles/CYK_simulation.dir
