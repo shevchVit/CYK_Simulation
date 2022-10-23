@@ -435,7 +435,7 @@ int main(int argc, char *argv[]) {
     file = vis == "y" || vis == "Y" || vis == "Yes" || vis == "yes";
     string line;
     if(file) {
-        cout << "Введите название файла (e[1..10].txt): ";
+        cout << "Введите название файла (e[1..12].txt): ";
         string file_name;
         cin >> file_name;
         string path(argv[0]);
