@@ -10,6 +10,8 @@ using namespace std;
 map<string, vector<string>> grammar;
 map<string, vector<string>> grammar_cnf;
 map<string, vector<vector<bool>>> cyk;
+//vector<string> terminals;
+string terminals = " ";
 vector<vector<string>> table;
 bool visualization = false;
 bool visualization_steps = false;
@@ -276,7 +278,9 @@ void cf_to_cnf() {
                 if(comps.empty()) {
                     eps.push_back(i.first);
                 }
-                    grammar_cnf[i.first].push_back(comps);
+                if(comps[0] < 'A' || comps[0] > 'Z')
+                    terminals += comps + " ";
+                grammar_cnf[i.first].push_back(comps);
             } else {
                 for (size_t k = 0; k < comp_s; ++k) {
                     size_t idx = comps.find(' ');
@@ -286,8 +290,11 @@ void cf_to_cnf() {
                     } else {
                         string NT = "N_" + cut;
                         comps_cnf += NT + " ";
-                        if (grammar_cnf.find(NT) == grammar_cnf.end())
+                        if (grammar_cnf.find(NT) == grammar_cnf.end()) {
                             grammar_cnf[NT].push_back(cut);
+//                            terminals.push_back(cut);
+                            terminals += cut + " ";
+                        }
                     }
                     comps.erase(0, idx + 1);
                 }
@@ -384,13 +391,41 @@ void cf_to_cnf() {
         getchar();
     }
 }
+void check_line(string &line, size_t n) {
+    stringstream os(line);
+    string word;
+    string new_line = "";
+    for(size_t i = 0; i < n; ++i) {
+        bool exist = true;
+        os >> word;
+        if(terminals.find(word) > terminals.size()) {
+            string find_word = "";
+            word.push_back((char)0);
+            for(char &symbol : word) {
+                find_word.push_back(symbol);
+                if(terminals.find(find_word) <= terminals.size()) {
+                    continue;
+                } else {
+                    char temp_symbol = find_word.back();
+                    find_word.pop_back();
+                    new_line += find_word + " ";
+                    find_word = "";
+                    find_word.push_back(temp_symbol);
+                }
+            }
+        } else {
+            new_line += word + " ";
+        }
+    }
+    line = new_line;
+}
 
 int main(int argc, char *argv[]) {
     cout << "Симуляция работы алгоритма CYK\n";
-    cout << "На вход подается КС-грамматика. В правилах между любыми двумя терминалами / нетерминалами ставится пробел. Все нетерминалы начинаются с большой буквы\n";
+    cout << "На вход подается КС-грамматика. В правилах между любыми двумя терминалами / нетерминалами ставится пробел. Все нетерминалы начинаются с большой буквы.\n";
     cout << "Правила разделяются знаком ';'. Если для одного нетерминала несколько правил, они записываются через знак '|' без пробелов.\n";
     cout << "Все правила записываются в одну строку. Пример: S->S + S|S * S|N;N->0|1;.\n";
-    cout << "Если после знака '|' ничего не писать, то в грамматику будет записана пустая строка (например, S->( S ) S|;)\n";
+    cout << "Если после знака '|' ничего не писать, то в грамматику будет записана пустая строка (например, S->( S ) S|;).\n";
     cout << "Стартовый нетерминал грамматики обязательно 'S'.\n";
     cout << "На проверку подается строка. Все слова с маленькой буквы. Слова разделяются ровно одним пробелом.\n";
     string vis;
@@ -437,7 +472,7 @@ int main(int argc, char *argv[]) {
         size_t pos = line.find(";");
         string expr = line.substr(0, pos);
         size_t temp_pos = expr.find("->");
-        size_t size_to = std::count(expr.begin(), expr.end(), '|');
+        size_t size_to = count(expr.begin(), expr.end(), '|');
         string or_nter = expr.substr(0, temp_pos);
         grammar[or_nter].resize(size_to + 1);
         neterm_size++;
@@ -462,7 +497,10 @@ int main(int argc, char *argv[]) {
         cout << "Введите строку для проверки: ";
     string test_line;
     getline(cin, test_line);
+    string origin_line = test_line;
     size_t n = count(test_line.begin(), test_line.end(), ' ') + 1;
+    check_line(test_line, n);
+    n = count(test_line.begin(), test_line.end(), ' ');
     resize_cyk(n);
     if(init_cyk(test_line, n))
         return 0;
@@ -474,9 +512,9 @@ int main(int argc, char *argv[]) {
         build_tree(root, tree[tree.size() - 1][0]);
         cout << "Дерево вывода:\n";
         dump2(root);
-        cout << "Из данной грамматики можно вывести строку: " << test_line << "\n";
+        cout << "Из данной грамматики можно вывести строку: " << origin_line << "\n";
     } else
-        cout << "Из данной грамматики невозможно вывести строку: " << test_line << "\n";
+        cout << "Из данной грамматики невозможно вывести строку: " << origin_line << "\n";
 
     return 0;
 }
